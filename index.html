@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naruto Pathfinder - Find Your Ninja Way!</title>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/grid.css">
+    <link rel="stylesheet" href="css/controls.css">
+</head>
+<body>
+<div class="game-container">
+    <header class="game-header">
+        <h1>🍥 Naruto's Pathfinder 🍥</h1>
+        <p class="subtitle">Help Naruto find the fastest path to become Hokage!</p>
+    </header>
+
+    <main class="game-main">
+        <div class="grid-container">
+            <div id="game-grid" class="grid"></div>
+        </div>
+
+        <aside class="controls-panel">
+            <div class="control-section">
+                <h3>Mission Control</h3>
+                <button id="start-btn" class="btn btn-primary">
+                    <span class="btn-icon">🏃</span> Find Path!
+                </button>
+                <button id="reset-btn" class="btn btn-secondary">
+                    <span class="btn-icon">🔄</span> Reset Grid
+                </button>
+                <button id="clear-path-btn" class="btn btn-secondary">
+                    <span class="btn-icon">🧹</span> Clear Path
+                </button>
+            </div>
+
+            <div class="control-section">
+                <h3>Ninja Speed</h3>
+                <div class="speed-control">
+                    <input type="range" id="speed-slider" min="1" max="100" value="50">
+                    <span id="speed-value">50ms</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Grid Size</h3>
+                <div class="grid-size-control">
+                    <input type="number" id="grid-size" min="5" max="20" value="10">
+                    <button id="resize-btn" class="btn btn-small">Resize</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Legend</h3>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box start-node"></div>
+                        <span>Naruto (Start)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box end-node"></div>
+                        <span>Hokage Office (End)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box wall-node"></div>
+                        <span>Obstacle</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box visited-node"></div>
+                        <span>Explored</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box path-node"></div>
+                        <span>Ninja Path</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Stats</h3>
+                <div class="stats">
+                    <p>Path Length: <span id="path-length">-</span></p>
+                    <p>Nodes Explored: <span id="nodes-explored">-</span></p>
+                    <p>Time Taken: <span id="time-taken">-</span>ms</p>
+                </div>
+            </div>
+        </aside>
+    </main>
+</div>
+
+<!-- JavaScript Files -->
+<script src="js/classes/Node.js"></script>
+<script src="js/classes/Grid.js"></script>
+<script src="js/classes/AStar.js"></script>
+<script src="js/utils/helpers.js"></script>
+<script src="js/ui/gridRenderer.js"></script>
+<script src="js/ui/controls.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+/* Controls CSS - Mission Control Panel */
+.controls-panel {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: var(--spacing-lg);
+    min-width: 280px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.control-section {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.control-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.control-section h3 {
+    color: var(--naruto-orange);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--naruto-orange), var(--hokage-red));
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--naruto-orange);
+}
+
+.btn-small {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+}
+
+.btn-icon {
+    font-size: 1.2em;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+    transform: none;
+}
+
+/* Speed Control */
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+#speed-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+
+#speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--naruto-orange);
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--naruto-orange);
+    transition: all var(--transition-fast);
+}
+
+#speed-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px var(--naruto-orange);
+}
+
+#speed-value {
+    min-width: 50px;
+    text-align: right;
+    color: var(--chakra-blue);
+    font-weight: bold;
+}
+
+/* Grid Size Control */
+.grid-size-control {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+#grid-size {
+    flex: 1;
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+#grid-size:focus {
+    outline: none;
+    border-color: var(--naruto-orange);
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.legend-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.legend-box.start-node {
+    background: var(--naruto-orange);
+    box-shadow: 0 0 8px var(--naruto-orange);
+}
+
+.legend-box.end-node {
+    background: var(--hokage-red);
+    box-shadow: 0 0 8px var(--hokage-red);
+}
+
+.legend-box.wall-node {
+    background: linear-gradient(45deg, #3a3a3a 25%, #2c2c2c 25%, #2c2c2c 50%, #3a3a3a 50%, #3a3a3a 75%, #2c2c2c 75%, #2c2c2c);
+    background-size: 6px 6px;
+}
+
+.legend-box.visited-node {
+    background: var(--chakra-blue);
+}
+
+.legend-box.path-node {
+    background: var(--leaf-green);
+    box-shadow: 0 0 8px var(--leaf-green);
+}
+
+/* Stats */
+.stats {
+    background: rgba(0, 0, 0, 0.2);
+    padding: var(--spacing-md);
+    border-radius: 8px;
+}
+
+.stats p {
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats p:last-child {
+    margin-bottom: 0;
+}
+
+.stats span {
+    color: var(--chakra-blue);
+    font-weight: bold;
+    font-family: monospace;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .controls-panel {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+/* Make grid container more flexible and visually engaging */
+.grid-container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Improve hover and selected state for cells */
+.grid-cell:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.07);
+    border-color: var(--naruto-orange);
+}
+
+/* Selected cell styles for clarity */
+.grid-cell.selected {
+    outline: 3px solid var(--chakra-blue);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Add labels or indicators for start/end nodes */
+.grid-cell.start-node::after,
+.grid-cell.end-node::after {
+    content: attr(data-label);
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.7em;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+    .grid {
+        gap: 1px;
+    }
+    .grid-cell {
+        aspect-ratio: 1;
+        font-size: 0.8em;
+    }
+}

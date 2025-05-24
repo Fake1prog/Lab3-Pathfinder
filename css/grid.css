@@ -1,0 +1,161 @@
+/* Grid CSS - Ninja Battle Grid */
+.grid-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: var(--spacing-md);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.grid {
+    display: grid;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px;
+    border-radius: 10px;
+    position: relative;
+}
+
+/* Grid Cell Base Styles */
+.grid-cell {
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.grid-cell:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+    border-color: var(--naruto-orange);
+    z-index: 1;
+}
+
+/* Node Type Styles */
+.grid-cell.start-node {
+    background: var(--naruto-orange);
+    border-color: var(--naruto-orange);
+    box-shadow: 0 0 15px var(--naruto-orange);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.grid-cell.end-node {
+    background: var(--hokage-red);
+    border-color: var(--hokage-red);
+    box-shadow: 0 0 15px var(--hokage-red);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.grid-cell.wall-node {
+    background: linear-gradient(45deg, #3a3a3a 25%, #2c2c2c 25%, #2c2c2c 50%, #3a3a3a 50%, #3a3a3a 75%, #2c2c2c 75%, #2c2c2c);
+    background-size: 10px 10px;
+    border-color: #1a1a1a;
+    cursor: not-allowed;
+    animation: wallAppear 0.3s ease-out;
+}
+
+.grid-cell.visited-node {
+    background: var(--chakra-blue);
+    border-color: var(--chakra-blue);
+    animation: visitedAnimation 0.5s ease-out;
+}
+
+.grid-cell.path-node {
+    background: var(--leaf-green);
+    border-color: var(--leaf-green);
+    box-shadow: 0 0 10px var(--leaf-green);
+    animation: pathAnimation 0.5s ease-out;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes wallAppear {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 0.5; }
+    100% { transform: scale(1) rotate(360deg); opacity: 1; }
+}
+
+@keyframes visitedAnimation {
+    0% {
+        transform: scale(0);
+        background: var(--naruto-orange);
+        border-radius: 50%;
+    }
+    50% {
+        transform: scale(1.2);
+        background: var(--chakra-blue);
+    }
+    100% {
+        transform: scale(1);
+        border-radius: 0;
+    }
+}
+
+@keyframes pathAnimation {
+    0% {
+        transform: scale(0) rotate(0deg);
+        background: var(--chakra-blue);
+    }
+    50% {
+        transform: scale(1.3) rotate(180deg);
+        background: var(--naruto-orange);
+    }
+    100% {
+        transform: scale(1) rotate(360deg);
+        background: var(--leaf-green);
+    }
+}
+
+/* Grid Overlays for Visual Effects */
+.grid-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.grid-cell:hover::before {
+    opacity: 1;
+}
+
+/* Weighted Node Styles (for future implementation) */
+.grid-cell.weighted-node {
+    background: rgba(255, 215, 0, 0.3);
+    border-color: gold;
+}
+
+.grid-cell.weighted-node::after {
+    content: attr(data-weight);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8em;
+    color: gold;
+    font-weight: bold;
+}
+
+/* Responsive Grid Sizing */
+@media (max-width: 768px) {
+    .grid {
+        gap: 1px;
+        padding: 1px;
+    }
+
+    .grid-cell {
+        border-width: 0.5px;
+    }
+}

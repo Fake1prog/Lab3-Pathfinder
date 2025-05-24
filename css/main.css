@@ -1,0 +1,122 @@
+/* Main CSS - Naruto Theme */
+:root {
+    /* Naruto Color Palette */
+    --naruto-orange: #FF6B35;
+    --naruto-blue: #4169E1;
+    --hokage-red: #DC143C;
+    --leaf-green: #228B22;
+    --chakra-blue: #00CED1;
+    --shadow-dark: #2C2C2C;
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --text-primary: #F5F5F5;
+    --text-secondary: #B0B0B0;
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Animations */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Animated Background Pattern */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            radial-gradient(circle at 20% 80%, var(--naruto-orange) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, var(--chakra-blue) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, var(--hokage-red) 0%, transparent 50%);
+    opacity: 0.1;
+    animation: floatingBg 20s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes floatingBg {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-20px, -20px) scale(1.1); }
+    66% { transform: translate(20px, -10px) scale(0.9); }
+}
+
+.game-container {
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    padding: var(--spacing-lg);
+    max-width: 1200px;
+    width: 90%;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 107, 53, 0.3);
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.game-header h1 {
+    font-size: 2.5rem;
+    color: var(--naruto-orange);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: var(--spacing-sm);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px var(--naruto-orange); }
+    to { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px var(--naruto-orange), 0 0 30px var(--naruto-orange); }
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.game-main {
+    display: flex;
+    gap: var(--spacing-xl);
+    align-items: flex-start;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .game-main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .game-header h1 {
+        font-size: 2rem;
+    }
+
+    .game-container {
+        padding: var(--spacing-md);
+    }
+}
