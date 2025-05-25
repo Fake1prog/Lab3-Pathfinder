@@ -1,6 +1,6 @@
 /**
  * UI Controls Handler
- * Managing all the jutsu control seals (buttons)
+ * Managing all the jutsu control seals (buttons) - Arcade Edition
  */
 
 const Controls = {
@@ -201,13 +201,13 @@ const Controls = {
      */
     updateButtonStates() {
         if (this.isRunning) {
-            this.elements.startBtn.innerHTML = '<span class="btn-icon">⏸</span> Stop';
+            this.elements.startBtn.innerHTML = 'STOP';
             this.elements.startBtn.classList.add('btn-stop');
             this.elements.resetBtn.disabled = false;
             this.elements.clearPathBtn.disabled = true;
             this.elements.resizeBtn.disabled = true;
         } else {
-            this.elements.startBtn.innerHTML = '<span class="btn-icon">🏃</span> Find Path!';
+            this.elements.startBtn.innerHTML = 'FIND PATH!';
             this.elements.startBtn.classList.remove('btn-stop');
             this.elements.resetBtn.disabled = false;
             this.elements.clearPathBtn.disabled = false;
@@ -234,30 +234,16 @@ const Controls = {
      * Add preset patterns dropdown
      */
     addPresetPatterns() {
-        const controlSection = document.querySelector('.control-section');
+        const presetSelect = document.getElementById('preset-select');
 
-        const presetSection = document.createElement('div');
-        presetSection.className = 'control-section';
-        presetSection.innerHTML = `
-            <h3>Training Grounds</h3>
-            <select id="preset-select" class="preset-select">
-                <option value="">Choose a preset...</option>
-                <option value="maze">Random Maze</option>
-                <option value="spiral">Spiral Pattern</option>
-                <option value="diagonal">Diagonal Maze</option>
-                <option value="simple">Simple Walls</option>
-            </select>
-        `;
-
-        controlSection.parentNode.insertBefore(presetSection, controlSection.nextSibling);
-
-        // Add event listener
-        document.getElementById('preset-select').addEventListener('change', (e) => {
-            if (e.target.value) {
-                this.applyPreset(e.target.value);
-                e.target.value = ''; // Reset selection
-            }
-        });
+        if (presetSelect) {
+            presetSelect.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    this.applyPreset(e.target.value);
+                    e.target.value = ''; // Reset selection
+                }
+            });
+        }
     },
 
     /**
@@ -269,19 +255,19 @@ const Controls = {
         switch(preset) {
             case 'maze':
                 Helpers.generateMaze(this.grid, 0.3);
-                this.showMessage('Random maze generated!', 'success');
+                this.showMessage('RANDOM MAZE GENERATED!', 'success');
                 break;
             case 'spiral':
                 Helpers.patterns.spiral(this.grid);
-                this.showMessage('Spiral pattern applied!', 'success');
+                this.showMessage('SPIRAL PATTERN APPLIED!', 'success');
                 break;
             case 'diagonal':
                 Helpers.patterns.diagonal(this.grid);
-                this.showMessage('Diagonal maze created!', 'success');
+                this.showMessage('DIAGONAL MAZE CREATED!', 'success');
                 break;
             case 'simple':
                 Helpers.patterns.simpleWalls(this.grid);
-                this.showMessage('Simple walls added!', 'success');
+                this.showMessage('SIMPLE WALLS ADDED!', 'success');
                 break;
         }
 
@@ -293,14 +279,14 @@ const Controls = {
      * Show success message
      */
     showSuccessMessage() {
-        this.showMessage('Path found! Naruto reaches the Hokage office!', 'success');
+        this.showMessage('PATH FOUND! MISSION COMPLETE!', 'success');
     },
 
     /**
      * Show no path message
      */
     showNoPathMessage() {
-        this.showMessage('No path found! The way is blocked!', 'error');
+        this.showMessage('NO PATH FOUND! GAME OVER!', 'error');
     },
 
     /**
@@ -327,22 +313,6 @@ const Controls = {
 // Add message styles
 const messageStyle = document.createElement('style');
 messageStyle.textContent = `
-    .preset-select {
-        width: 100%;
-        padding: var(--spacing-sm);
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 5px;
-        color: var(--text-primary);
-        font-size: 1rem;
-        cursor: pointer;
-    }
-    
-    .preset-select:focus {
-        outline: none;
-        border-color: var(--naruto-orange);
-    }
-    
     .btn-stop {
         background: linear-gradient(135deg, #DC143C, #8B0000);
     }
@@ -355,9 +325,13 @@ messageStyle.textContent = `
         padding: var(--spacing-md) var(--spacing-lg);
         border-radius: 8px;
         font-weight: bold;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.8rem;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         transition: transform 0.3s ease-out;
         z-index: 1000;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
     .message.show {
@@ -367,16 +341,22 @@ messageStyle.textContent = `
     .message-success {
         background: var(--leaf-green);
         color: white;
+        border: 2px solid #fff;
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
     }
     
     .message-error {
         background: var(--hokage-red);
         color: white;
+        border: 2px solid #fff;
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
     }
     
     .message-info {
         background: var(--chakra-blue);
         color: white;
+        border: 2px solid #fff;
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
     }
 `;
 document.head.appendChild(messageStyle);

@@ -1,4 +1,6 @@
-/* Main CSS - Naruto Theme */
+/* Main CSS - Naruto Arcade Theme */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 :root {
     /* Naruto Color Palette */
     --naruto-orange: #FF6B35;
@@ -7,10 +9,10 @@
     --leaf-green: #228B22;
     --chakra-blue: #00CED1;
     --shadow-dark: #2C2C2C;
-    --bg-primary: #1a1a2e;
-    --bg-secondary: #16213e;
-    --text-primary: #F5F5F5;
-    --text-secondary: #B0B0B0;
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --text-primary: #FFFFFF;
+    --text-secondary: #FFD700;
 
     /* Spacing */
     --spacing-xs: 4px;
@@ -31,10 +33,10 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    font-family: 'Press Start 2P', monospace;
+    background: var(--bg-primary);
     color: var(--text-primary);
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,7 +44,7 @@ body {
     position: relative;
 }
 
-/* Animated Background Pattern */
+/* Arcade Cabinet Background */
 body::before {
     content: '';
     position: absolute;
@@ -50,73 +52,155 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image:
-            radial-gradient(circle at 20% 80%, var(--naruto-orange) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, var(--chakra-blue) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, var(--hokage-red) 0%, transparent 50%);
-    opacity: 0.1;
-    animation: floatingBg 20s ease-in-out infinite;
+    background:
+            linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+            repeating-linear-gradient(
+                    0deg,
+                    #000 0px,
+                    #000 2px,
+                    transparent 2px,
+                    transparent 4px
+            );
     pointer-events: none;
 }
 
-@keyframes floatingBg {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(-20px, -20px) scale(1.1); }
-    66% { transform: translate(20px, -10px) scale(0.9); }
+/* CRT TV Effect */
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.03) 0px,
+            transparent 1px,
+            transparent 2px,
+            rgba(255,255,255,0.03) 3px
+    );
+    pointer-events: none;
+    animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(10px); }
 }
 
 .game-container {
-    background: rgba(22, 33, 62, 0.9);
+    background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 8px solid #333;
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    box-shadow:
+            inset 0 0 50px rgba(255, 107, 53, 0.2),
+            0 0 50px rgba(255, 107, 53, 0.3),
+            0 0 100px rgba(255, 107, 53, 0.1);
     padding: var(--spacing-lg);
-    max-width: 1200px;
-    width: 90%;
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 107, 53, 0.3);
+    width: 95vw;
+    max-width: 1400px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Arcade Screen Effect */
+.game-container::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: linear-gradient(45deg,
+    var(--naruto-orange) 0%,
+    var(--chakra-blue) 25%,
+    var(--hokage-red) 50%,
+    var(--leaf-green) 75%,
+    var(--naruto-orange) 100%
+    );
+    border-radius: 25px;
+    z-index: -1;
+    animation: gradient-border 3s linear infinite;
+}
+
+@keyframes gradient-border {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .game-header {
     text-align: center;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    position: relative;
 }
 
 .game-header h1 {
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
     color: var(--naruto-orange);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow:
+            3px 3px 0px var(--hokage-red),
+            6px 6px 0px rgba(0,0,0,0.5),
+            0 0 30px var(--naruto-orange);
     margin-bottom: var(--spacing-sm);
-    animation: glow 2s ease-in-out infinite alternate;
+    animation: arcade-glow 2s ease-in-out infinite alternate;
+    letter-spacing: 2px;
 }
 
-@keyframes glow {
-    from { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px var(--naruto-orange); }
-    to { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px var(--naruto-orange), 0 0 30px var(--naruto-orange); }
+@keyframes arcade-glow {
+    from {
+        filter: brightness(1) drop-shadow(0 0 20px var(--naruto-orange));
+    }
+    to {
+        filter: brightness(1.2) drop-shadow(0 0 40px var(--naruto-orange));
+    }
 }
 
 .subtitle {
     color: var(--text-secondary);
-    font-size: 1.1rem;
+    font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+    animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
 }
 
 .game-main {
     display: flex;
-    gap: var(--spacing-xl);
-    align-items: flex-start;
+    gap: var(--spacing-lg);
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .game-main {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .game-header h1 {
-        font-size: 2rem;
+    body {
+        font-family: Arial, sans-serif;
     }
 
     .game-container {
-        padding: var(--spacing-md);
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+        padding: var(--spacing-sm);
+    }
+
+    .game-main {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .game-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .subtitle {
+        font-size: 0.7rem;
     }
 }

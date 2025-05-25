@@ -1,6 +1,6 @@
 /**
  * Naruto Pathfinder - Main Application
- * The journey to become Hokage begins here!
+ * Arcade Edition - Insert Coin to Start!
  */
 
 class NarutoPathfinder {
@@ -14,7 +14,7 @@ class NarutoPathfinder {
      * Initialize the application
      */
     init() {
-        console.log('🍥 Naruto Pathfinder Initializing...');
+        console.log('Initializing Naruto Pathfinder Arcade Edition...');
 
         try {
             // Create grid
@@ -33,13 +33,13 @@ class NarutoPathfinder {
             this.setupAdditionalFeatures();
 
             this.isInitialized = true;
-            console.log('✅ Initialization complete! Dattebayo!');
+            console.log('Initialization complete! Ready to play!');
 
             // Show welcome message
             this.showWelcomeMessage();
 
         } catch (error) {
-            console.error('❌ Initialization failed:', error);
+            console.error('Initialization failed:', error);
             this.showErrorMessage();
         }
     }
@@ -50,12 +50,6 @@ class NarutoPathfinder {
     setupAdditionalFeatures() {
         // Add save/load functionality
         this.addSaveLoadButtons();
-
-        // Add theme switcher (future feature)
-        // this.addThemeSwitcher();
-
-        // Add tutorial mode (future feature)
-        // this.addTutorialMode();
 
         // Performance monitoring
         this.setupPerformanceMonitoring();
@@ -72,10 +66,10 @@ class NarutoPathfinder {
         saveLoadSection.innerHTML = `
             <h3>Save/Load Mission</h3>
             <button id="save-btn" class="btn btn-secondary">
-                <span class="btn-icon">💾</span> Save Grid
+                Save Grid
             </button>
             <button id="load-btn" class="btn btn-secondary">
-                <span class="btn-icon">📂</span> Load Grid
+                Load Grid
             </button>
             <input type="file" id="file-input" accept=".json" style="display: none;">
         `;
@@ -101,7 +95,7 @@ class NarutoPathfinder {
         a.click();
         URL.revokeObjectURL(url);
 
-        Controls.showMessage('Grid saved successfully!', 'success');
+        Controls.showMessage('GRID SAVED!', 'success');
     }
 
     /**
@@ -123,9 +117,9 @@ class NarutoPathfinder {
             const success = Helpers.importGrid(this.grid, e.target.result);
             if (success) {
                 GridRenderer.render();
-                Controls.showMessage('Grid loaded successfully!', 'success');
+                Controls.showMessage('GRID LOADED!', 'success');
             } else {
-                Controls.showMessage('Failed to load grid!', 'error');
+                Controls.showMessage('LOAD FAILED!', 'error');
             }
         };
         reader.readAsText(file);
@@ -148,7 +142,7 @@ class NarutoPathfinder {
 
             if (currentTime >= lastTime + 1000) {
                 const fps = Math.round((frames * 1000) / (currentTime - lastTime));
-                console.log(`FPS: ${fps}`);
+                // console.log(`FPS: ${fps}`);
                 frames = 0;
                 lastTime = currentTime;
             }
@@ -165,10 +159,10 @@ class NarutoPathfinder {
      */
     showWelcomeMessage() {
         const messages = [
-            "Welcome to Naruto's Pathfinder! Dattebayo!",
-            "Help Naruto find the fastest path to the Hokage office!",
-            "Click to place walls, then hit 'Find Path!'",
-            "Press SPACE to start, R to reset, C to clear path"
+            "WELCOME TO NARUTO'S PATHFINDER!",
+            "HELP NARUTO REACH THE HOKAGE OFFICE!",
+            "CLICK TO PLACE WALLS",
+            "PRESS SPACE TO START"
         ];
 
         let index = 0;
@@ -186,10 +180,10 @@ class NarutoPathfinder {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-container';
         errorDiv.innerHTML = `
-            <h2>❌ Initialization Failed</h2>
-            <p>Something went wrong while loading the Naruto Pathfinder.</p>
-            <p>Please refresh the page and try again.</p>
-            <button onclick="location.reload()">Refresh Page</button>
+            <h2>GAME OVER</h2>
+            <p>Initialization Failed</p>
+            <p>Please refresh to try again</p>
+            <button onclick="location.reload()">RETRY</button>
         `;
         document.body.appendChild(errorDiv);
     }
@@ -202,8 +196,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loader.className = 'loader';
     loader.innerHTML = `
         <div class="loader-content">
-            <div class="loader-symbol">🍥</div>
-            <div class="loader-text">Loading Ninja Way...</div>
+            <div class="loader-symbol">LOADING</div>
+            <div class="loader-text">NINJA WAY...</div>
+            <div class="loader-bar">
+                <div class="loader-bar-fill"></div>
+            </div>
         </div>
     `;
     document.body.appendChild(loader);
@@ -245,23 +242,49 @@ loaderStyle.textContent = `
     
     .loader-content {
         text-align: center;
+        font-family: 'Press Start 2P', monospace;
     }
     
     .loader-symbol {
-        font-size: 4rem;
-        animation: spin 2s linear infinite;
+        font-size: 2rem;
+        color: var(--naruto-orange);
+        margin-bottom: 1rem;
+        animation: arcade-flash 0.5s step-start infinite;
+        text-shadow: 0 0 20px var(--naruto-orange);
     }
     
     .loader-text {
-        margin-top: 1rem;
-        font-size: 1.2rem;
-        color: var(--naruto-orange);
-        animation: pulse 1.5s ease-in-out infinite;
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        animation: arcade-flash 0.5s step-start infinite;
+        animation-delay: 0.25s;
     }
     
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+    .loader-bar {
+        width: 200px;
+        height: 20px;
+        background: #222;
+        border: 2px solid #444;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+    
+    .loader-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--naruto-orange), var(--chakra-blue));
+        animation: loader-fill 1s ease-out forwards;
+    }
+    
+    @keyframes arcade-flash {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0.3; }
+    }
+    
+    @keyframes loader-fill {
+        from { width: 0%; }
+        to { width: 100%; }
     }
     
     .error-container {
@@ -272,40 +295,52 @@ loaderStyle.textContent = `
         background: var(--bg-secondary);
         padding: 2rem;
         border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 4px solid var(--hokage-red);
+        box-shadow: 0 0 30px rgba(220, 20, 60, 0.5);
         text-align: center;
+        font-family: 'Press Start 2P', monospace;
+    }
+    
+    .error-container h2 {
+        color: var(--hokage-red);
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .error-container p {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+        line-height: 1.5;
     }
     
     .error-container button {
         margin-top: 1rem;
         padding: 0.5rem 1rem;
-        background: var(--naruto-orange);
+        background: var(--hokage-red);
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 0.8rem;
+        font-family: 'Press Start 2P', monospace;
+        text-transform: uppercase;
+        box-shadow: 0 3px 0 #8B0000;
+        transition: all 0.1s;
     }
     
     .error-container button:hover {
-        background: var(--hokage-red);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 0 #8B0000;
+    }
+    
+    .error-container button:active {
+        transform: translateY(2px);
+        box-shadow: 0 1px 0 #8B0000;
     }
 `;
 document.head.appendChild(loaderStyle);
 
-// Log ASCII art
-console.log(`
-    _   _                  _        
-   | \\ | | __ _ _ __ _   _| |_ ___  
-   |  \\| |/ _\` | '__| | | | __/ _ \\ 
-   | |\\  | (_| | |  | |_| | || (_) |
-   |_| \\_|\\__,_|_|   \\__,_|\\__\\___/ 
-                                    
-   ____       _   _      __ _           _           
-  |  _ \\ __ _| |_| |__  / _(_)_ __   __| | ___ _ __ 
-  | |_) / _\` | __| '_ \\| |_| | '_ \\ / _\` |/ _ \\ '__|
-  |  __/ (_| | |_| | | |  _| | | | | (_| |  __/ |   
-  |_|   \\__,_|\\__|_| |_|_| |_|_| |_|\\__,_|\\___|_|   
-                                                    
-  🍥 Dattebayo! 🍥
-`);
+// Log arcade style message
+console.log('%cNARUTO PATHFINDER - ARCADE EDITION', 'color: #FF6B35; font-size: 20px; font-weight: bold; text-shadow: 2px 2px 0 #000;');
+console.log('%cInsert coin to continue...', 'color: #FFD700; font-size: 14px;');
