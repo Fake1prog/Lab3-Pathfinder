@@ -11,7 +11,6 @@ class Grid {
         this.endNode = null;
         this.mouseIsPressed = false;
         this.currentMode = 'wall'; // 'wall', 'start', 'end', 'weight'
-        this.nextWallType = 1; // NEW: To alternate wall types
 
         this.initializeGrid();
         this.setDefaultStartEnd();
@@ -88,6 +87,14 @@ class Grid {
     }
 
     /**
+     * Get random wall type (1 or 2)
+     * Randomly selects between obstacle1.png and obstacle2.png
+     */
+    getRandomWallType() {
+        return Math.random() < 0.5 ? 1 : 2;
+    }
+
+    /**
      * Reset all nodes for new pathfinding
      * Clear the training ground for a new exercise
      */
@@ -101,12 +108,13 @@ class Grid {
                 this.nodes[row][col].h = 0;
                 this.nodes[row][col].f = Infinity;
                 this.nodes[row][col].parent = null;
-                if (this.nodes[row][col].element) { // If element exists
+                if (this.nodes[row][col].element) {
                     this.nodes[row][col].updateVisualState();
                 }
             }
         }
     }
+
     /**
      * Clear all walls from the grid
      * Remove all obstacles from the training ground
@@ -117,7 +125,7 @@ class Grid {
                 const node = this.nodes[row][col];
                 if (node.isWall) {
                     node.isWall = false;
-                    node.wallType = null; // Reset wallType
+                    node.wallType = null;
                     node.updateVisualState();
                 }
             }
@@ -129,12 +137,10 @@ class Grid {
      * Complete training ground reset
      */
     resetGrid() {
-        this.initializeGrid(); // This will create new Node instances, so wallType is null initially
+        this.initializeGrid();
         this.setDefaultStartEnd();
-        this.nextWallType = 1; // Reset wall type alternator
         this.render();
     }
-
 
     /**
      * Handle mouse interactions with the grid
@@ -151,16 +157,17 @@ class Grid {
             this.currentMode = 'end';
         } else {
             this.currentMode = 'wall';
-            // Toggle wall state first
-            node.toggleWall(); // This flips node.isWall
+            // Toggle wall state
+            node.toggleWall();
 
-            if (node.isWall) { // If it just became a wall
-                node.wallType = this.nextWallType;
-                this.nextWallType = this.nextWallType === 1 ? 2 : 1; // Alternate for the next one
-            } else { // If it stopped being a wall
+            if (node.isWall) {
+                // Assign random wall type when wall is created
+                node.wallType = this.getRandomWallType();
+            } else {
+                // Clear wall type when wall is removed
                 node.wallType = null;
             }
-            node.updateVisualState(); // Update visuals
+            node.updateVisualState();
         }
     }
 
@@ -184,13 +191,10 @@ class Grid {
             case 'wall':
                 // Only add walls on drag if the cell is not already a start/end/wall
                 if (!node.isStart && !node.isEnd && !node.isWall) {
-                    node.isWall = true; // Set it as a wall
-                    node.wallType = this.nextWallType;
+                    node.isWall = true;
+                    node.wallType = this.getRandomWallType(); // Assign random type
                     node.updateVisualState();
-                    this.nextWallType = this.nextWallType === 1 ? 2 : 1; // Alternate for the next one
                 }
-                // If you want dragging to also REMOVE walls, you'd need different logic here
-                // e.g., if (node.isWall) { node.isWall = false; node.wallType = null; node.updateVisualState(); }
                 break;
         }
     }
@@ -250,15 +254,18 @@ class Grid {
             cols: this.cols,
             walls: [],
             startNode: null,
-            endNode: null,
-            nextWallType: this.nextWallType // Save the current alternator state
+            endNode: null
         };
 
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
                 const node = this.nodes[row][col];
                 if (node.isWall) {
-                    gridData.walls.push({ row: node.row, col: node.col, type: node.wallType });
+                    gridData.walls.push({
+                        row: node.row,
+                        col: node.col,
+                        type: node.wallType || 1 // Default to type 1 if not set
+                    });
                 }
                 if (node.isStart) {
                     gridData.startNode = { row: node.row, col: node.col };
@@ -280,32 +287,39 @@ class Grid {
         if (!gridData) return false;
 
         try {
-            // Resize grid if necessary, or clear for current size
+            // Resize grid if necessary
             if (gridData.rows !== this.rows || gridData.cols !== this.cols) {
-                this.resize(gridData.rows, gridData.cols); // resize should ideally call resetGrid elements
+                this.resize(gridData.rows, gridData.cols);
             } else {
                 // Clear existing elements properly if not resizing
                 this.clearWalls();
-                if (this.startNode) { this.startNode.isStart = false; this.startNode.updateVisualState(); this.startNode = null; }
-                if (this.endNode) { this.endNode.isEnd = false; this.endNode.updateVisualState(); this.endNode = null; }
-                this.setDefaultStartEnd(); // Reset to defaults before applying loaded specifics
+                if (this.startNode) {
+                    this.startNode.isStart = false;
+                    this.startNode.updateVisualState();
+                    this.startNode = null;
+                }
+                if (this.endNode) {
+                    this.endNode.isEnd = false;
+                    this.endNode.updateVisualState();
+                    this.endNode = null;
+                }
+                this.setDefaultStartEnd();
             }
 
-            this.nextWallType = gridData.nextWallType || 1; // Restore alternator state
-
             // Restore walls with their types
-            gridData.walls.forEach(({ row, col, type }) => {
-                const node = this.getNode(row, col);
-                // Ensure wall isn't placed on designated start/end if they are loaded later
-                if (node && !(gridData.startNode && gridData.startNode.row === row && gridData.startNode.col === col) &&
-                    !(gridData.endNode && gridData.endNode.row === row && gridData.endNode.col === col) ) {
-                    node.isWall = true;
-                    node.wallType = type || 1; // Default to type 1 if 'type' is undefined
-                    node.updateVisualState();
-                }
-            });
+            if (gridData.walls) {
+                gridData.walls.forEach(({ row, col, type }) => {
+                    const node = this.getNode(row, col);
+                    if (node && !(gridData.startNode && gridData.startNode.row === row && gridData.startNode.col === col) &&
+                        !(gridData.endNode && gridData.endNode.row === row && gridData.endNode.col === col)) {
+                        node.isWall = true;
+                        node.wallType = type || this.getRandomWallType(); // Use saved type or random
+                        node.updateVisualState();
+                    }
+                });
+            }
 
-            // Restore start and end nodes (critical to do this after walls potentially, or ensure walls don't override)
+            // Restore start and end nodes
             if (gridData.startNode) {
                 this.setStartNode(gridData.startNode.row, gridData.startNode.col);
             }
@@ -313,11 +327,7 @@ class Grid {
                 this.setEndNode(gridData.endNode.row, gridData.endNode.col);
             }
 
-            // this.render(); // The setStartNode, setEndNode, and updateVisualState for walls should handle rendering.
-            // If resize was called, it includes a render. If not, ensure all states are visually up to date.
-            // A final full render might be safest if granular updates are complex.
-            GridRenderer.render(); // Or if your Grid.render() is sufficient and called by resize/setters.
-
+            GridRenderer.render();
             return true;
         } catch (error) {
             console.error('Failed to load grid data:', error);

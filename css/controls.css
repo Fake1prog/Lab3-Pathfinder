@@ -240,46 +240,49 @@
     border-radius: 4px;
     border: 2px solid #444;
     flex-shrink: 0;
-    /* Add these for image display in legend boxes */
-    background-size: contain; /* Or cover, or 100% 100% */
+    background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .legend-box.start-node {
     background-image: url('../assets/naruto.png');
-    background-color: transparent; /* Or a theme-appropriate fallback */
+    background-color: transparent;
     border-color: #fff;
     box-shadow: 0 0 8px var(--naruto-orange);
 }
 
 .legend-box.end-node {
     background-image: url('../assets/madara.png');
-    background-color: transparent; /* Or a theme-appropriate fallback */
+    background-color: transparent;
     border-color: #fff;
     box-shadow: 0 0 8px var(--hokage-red);
 }
 
 .legend-box.wall-node {
-    /* Default to obstacle1 for legend, or create a generic wall icon */
+    background-color: #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.legend-box.wall-node.wall-type-1 {
     background-image: url('../assets/obstacle1.png');
-    background-color: #333; /* Fallback color */
-    /* If you prefer the old gradient for the legend:
-    background: linear-gradient(45deg, #444 25%, #333 25%, #333 50%, #444 50%, #444 75%, #333 75%, #333);
-    background-size: 6px 6px; */
+}
+
+.legend-box.wall-node.wall-type-2 {
+    background-image: url('../assets/obstacle2.png');
 }
 
 .legend-box.visited-node {
-    background-color: var(--naruto-orange); /* Changed to orange */
-    /* If you want an icon too, you could add:
-    background-image: url('../assets/your-visited-icon.png'); */
-    border-color: #FFA500; /* Orange border to match */
+    background-color: var(--naruto-orange);
+    border-color: #FFA500;
     box-shadow: 0 0 8px var(--naruto-orange);
 }
 
 .legend-box.path-node {
     background-image: url('../assets/attack.png');
-    background-color: transparent; /* Or a theme-appropriate fallback */
+    background-color: transparent;
     border-color: #fff;
     box-shadow: 0 0 8px var(--leaf-green);
 }
@@ -400,6 +403,44 @@
     color: #fff;
     padding: 2px 4px;
     border-radius: 3px;
+}
+
+/* Music Controls Styling */
+.music-off {
+    background: #666 !important;
+    color: #ccc !important;
+}
+
+#volume-slider {
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #333;
+    border: 1px solid #555;
+    outline: none;
+    cursor: pointer;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--naruto-orange);
+    border: 1px solid #fff;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(255, 107, 53, 0.5);
+    transition: all var(--transition-fast);
+}
+
+#volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px var(--naruto-orange);
+}
+
+#volume-display {
+    color: var(--text-secondary);
+    font-weight: bold;
 }
 
 /* Responsive adjustments for smaller screens */

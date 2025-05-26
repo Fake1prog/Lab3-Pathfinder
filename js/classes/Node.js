@@ -15,7 +15,7 @@ class Node {
         this.isVisited = false;
         this.isPath = false;
         this.weight = weight; // For weighted pathfinding
-        this.wallType = null; // NEW: To store wall type (1 or 2)
+        this.wallType = null; // To store wall type (1 or 2)
 
         // A* algorithm properties
         this.g = Infinity; // Cost from start to this node
@@ -31,7 +31,6 @@ class Node {
      * Reset node for new pathfinding calculation
      * Like clearing the training ground for a new exercise
      */
-
     reset() {
         this.isVisited = false;
         this.isPath = false;
@@ -39,11 +38,6 @@ class Node {
         this.h = 0;
         this.f = Infinity;
         this.parent = null;
-        // this.isWall is reset by Grid.clearWalls or Grid.resetGrid
-        // If reset() is called on a wall node that should remain a wall but clear path data,
-        // then wallType should not be reset here.
-        // However, if reset() means full node property reset for pathfinding:
-        // this.wallType = null; // Reset if wall state is also reset by context
 
         // Update visual state if element exists
         if (this.element) {
@@ -73,14 +67,6 @@ class Node {
             [0, 1],  // Right
             [1, 0],  // Down
             [0, -1]  // Left
-        ];
-
-        // Optional: Add diagonal movement for more natural paths
-        const diagonalDirections = [
-            [-1, -1], // Up-Left
-            [-1, 1],  // Up-Right
-            [1, 1],   // Down-Right
-            [1, -1]   // Down-Left
         ];
 
         // Check all cardinal directions
@@ -113,7 +99,6 @@ class Node {
      * Update the visual state of the node
      * Like changing the jutsu effect on the tile
      */
-
     updateVisualState() {
         if (!this.element) return;
 
@@ -121,12 +106,12 @@ class Node {
         this.element.classList.remove(
             'start-node',
             'end-node',
-            'wall-node',    // Base wall class
-            'type1',        // Specific wall type 1 class
-            'type2',        // Specific wall type 2 class
+            'wall-node',
+            'wall-type-1',
+            'wall-type-2',
             'visited-node',
             'path-node',
-            'weighted-node' // If you had this for weights
+            'weighted-node'
         );
 
         // Add appropriate class based on state
@@ -135,11 +120,12 @@ class Node {
         } else if (this.isEnd) {
             this.element.classList.add('end-node');
         } else if (this.isWall) {
-            this.element.classList.add('wall-node'); // Add base wall class
+            this.element.classList.add('wall-node');
+            // Add specific wall type class
             if (this.wallType === 1) {
-                this.element.classList.add('type1');
+                this.element.classList.add('wall-type-1');
             } else if (this.wallType === 2) {
-                this.element.classList.add('type2');
+                this.element.classList.add('wall-type-2');
             }
         } else if (this.isPath) {
             this.element.classList.add('path-node');
@@ -148,7 +134,7 @@ class Node {
         }
 
         // Update weight data attribute if needed
-        if (this.weight > 1 && !this.isStart && !this.isEnd && !this.isWall) { // Don't show weight on special nodes
+        if (this.weight > 1 && !this.isStart && !this.isEnd && !this.isWall) {
             this.element.setAttribute('data-weight', this.weight);
             this.element.classList.add('weighted-node');
         } else {
@@ -160,13 +146,10 @@ class Node {
      * Toggle wall state
      * Like Yamato creating a wood wall
      */
-
     toggleWall() {
         if (!this.isStart && !this.isEnd) {
             this.isWall = !this.isWall;
-            // The wallType assignment and updateVisualState() will be handled by Grid.js
-            // to ensure the correct alternating type is set.
-            // If it becomes not a wall, wallType should be nulled by Grid.js
+            // Wall type will be set by Grid.js to ensure proper randomization
         }
     }
 
@@ -178,6 +161,7 @@ class Node {
         this.isStart = true;
         this.isEnd = false;
         this.isWall = false;
+        this.wallType = null; // Clear wall type when becoming start
         this.updateVisualState();
     }
 
@@ -189,6 +173,7 @@ class Node {
         this.isEnd = true;
         this.isStart = false;
         this.isWall = false;
+        this.wallType = null; // Clear wall type when becoming end
         this.updateVisualState();
     }
 

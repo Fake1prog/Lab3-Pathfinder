@@ -37,6 +37,21 @@
             </div>
 
             <div class="control-section">
+                <h3>🎵 Audio</h3>
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                    <button id="music-toggle-btn" class="btn btn-secondary btn-small" style="flex: 1;">
+                        🔊 Music ON
+                    </button>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <span style="font-size: 10px; color: #ccc;">Vol:</span>
+                    <input type="range" id="volume-slider" min="0" max="100" value="30"
+                           style="flex: 1; height: 20px;">
+                    <span id="volume-display" style="font-size: 10px; color: var(--text-secondary); min-width: 35px;">30%</span>
+                </div>
+            </div>
+
+            <div class="control-section">
                 <h3>Ninja Speed</h3>
                 <div class="speed-control">
                     <input type="range" id="speed-slider" min="1" max="100" value="50">
@@ -45,7 +60,20 @@
             </div>
 
             <div class="control-section">
-                <h3>Grid Size</h3>
+                <h3>Battlefield Maps</h3>
+                <select id="battlefield-select" class="preset-select">
+                    <option value="">Select a Map...</option>
+                    <option value="forestOfDeath">🌲 Forest of Death</option>
+                    <option value="valleyOfTheEnd">⚔️ Valley of the End</option>
+                    <option value="hiddenLeafVillage">🏘️ Hidden Leaf Village</option>
+                </select>
+                <button id="load-battlefield-btn" class="btn btn-secondary btn-small">
+                    <span class="btn-icon">🗺️</span> Load Map
+                </button>
+            </div>
+
+            <div class="control-section">
+                <h3>Grid Settings</h3>
                 <div class="grid-size-control">
                     <input type="number" id="grid-size" min="5" max="20" value="10">
                     <button id="resize-btn" class="btn btn-small">Resize</button>
@@ -64,8 +92,12 @@
                         <span>Madara (End)</span>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-box wall-node"></div>
-                        <span>Obstacle</span>
+                        <div class="legend-box wall-node wall-type-1"></div>
+                        <span>Obstacle 1</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box wall-node wall-type-2"></div>
+                        <span>Obstacle 2</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-box visited-node"></div>
@@ -97,6 +129,7 @@
 <script src="js/utils/helpers.js"></script>
 <script src="js/ui/gridRenderer.js"></script>
 <script src="js/ui/controls.js"></script>
+<script src="js/ui/battlefieldControls.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
