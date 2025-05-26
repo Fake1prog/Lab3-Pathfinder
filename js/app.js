@@ -900,7 +900,7 @@ function showWelcomeMessage() {
                 }
             }, 500);
         }
-    }, 4000);
+    }, 2000);
 }
 
 /**
