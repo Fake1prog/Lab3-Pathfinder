@@ -1,10 +1,31 @@
 {
-  "name": "Lab3-Pathfinder",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "naruto-pathfinder",
+  "version": "2.0.0",
+  "description": "🍥 Naruto's Pathfinder - Help Naruto find the fastest path to defeat Madara! An interactive A* pathfinding visualizer with epic ninja theme.",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"No tests specified\"",
+    "build": "echo 'Static site - no build needed'"
   },
-  "private": true
+  "keywords": [
+    "pathfinder",
+    "algorithm",
+    "visualization",
+    "a-star",
+    "naruto",
+    "game",
+    "interactive"
+  ],
+  "author": "Your Name Here",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "compression": "^1.7.4",
+    "helmet": "^7.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
