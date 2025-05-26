@@ -205,7 +205,19 @@ class Grid {
     }
 
     /**
-     * Render the grid to the DOM
+     * Get appropriate CSS class for grid size optimization
+     */
+    getGridSizeClass() {
+        if (this.rows >= 15 && this.rows < 20) {
+            return 'grid-size-15';
+        } else if (this.rows >= 20) {
+            return 'grid-size-20';
+        }
+        return '';
+    }
+
+    /**
+     * Render the grid to the DOM - ENHANCED VERSION
      * Create the visual representation of the training ground
      */
     render() {
@@ -215,6 +227,16 @@ class Grid {
         // Set CSS Grid properties
         gridElement.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
         gridElement.style.gridTemplateRows = `repeat(${this.rows}, 1fr)`;
+
+        // Add size-specific CSS class for optimization
+        gridElement.className = 'grid';
+        const sizeClass = this.getGridSizeClass();
+        if (sizeClass) {
+            gridElement.classList.add(sizeClass);
+        }
+
+        // Log grid sizing for debugging
+        console.log(`🎮 Rendering ${this.rows}x${this.cols} grid with class: ${sizeClass || 'default'}`);
 
         // Create and append node elements
         for (let row = 0; row < this.rows; row++) {
@@ -227,22 +249,90 @@ class Grid {
                 element.addEventListener('mouseenter', () => this.handleMouseEnter(row, col));
                 element.addEventListener('mouseup', () => this.handleMouseUp());
 
+                // Add touch event listeners for mobile
+                element.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.handleMouseDown(row, col);
+                });
+
+                element.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    // Get touch position and find the element under it
+                    const touch = e.touches[0];
+                    const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (elementUnderTouch && elementUnderTouch.classList.contains('grid-cell')) {
+                        const touchRow = parseInt(elementUnderTouch.dataset.row);
+                        const touchCol = parseInt(elementUnderTouch.dataset.col);
+                        this.handleMouseEnter(touchRow, touchCol);
+                    }
+                });
+
+                element.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.handleMouseUp();
+                });
+
                 gridElement.appendChild(element);
             }
         }
 
         // Global mouse up listener
         document.addEventListener('mouseup', () => this.handleMouseUp());
+
+        // Force layout recalculation for proper sizing
+        setTimeout(() => {
+            this.optimizeGridDisplay();
+        }, 10);
     }
 
     /**
-     * Resize the grid to new dimensions
+     * Optimize grid display based on current size
+     */
+    optimizeGridDisplay() {
+        const gridElement = document.getElementById('game-grid');
+        const containerElement = gridElement.parentElement;
+
+        if (!gridElement || !containerElement) return;
+
+        // Get available container dimensions
+        const containerRect = containerElement.getBoundingClientRect();
+        const availableWidth = containerRect.width - 32; // Account for padding
+        const availableHeight = containerRect.height - 32;
+        const availableSize = Math.min(availableWidth, availableHeight);
+
+        // Calculate optimal cell size
+        const maxCellSize = Math.floor(availableSize / Math.max(this.rows, this.cols));
+        const minCellSize = Math.max(8, Math.min(maxCellSize, 40));
+
+        // Apply dynamic sizing for large grids
+        if (this.rows >= 15 || this.cols >= 15) {
+            gridElement.style.gap = '1px';
+            gridElement.style.padding = '2px';
+
+            // Set maximum dimensions to prevent overflow
+            const maxGridSize = Math.min(availableWidth, availableHeight);
+            gridElement.style.maxWidth = `${maxGridSize}px`;
+            gridElement.style.maxHeight = `${maxGridSize}px`;
+        }
+
+        console.log(`📐 Grid optimized: ${this.rows}x${this.cols}, available: ${availableSize}px, cell size: ${minCellSize}px`);
+    }
+
+    /**
+     * Resize the grid to new dimensions - ENHANCED VERSION
      * Like expanding the training ground
      */
     resize(newRows, newCols) {
+        console.log(`🔄 Resizing grid from ${this.rows}x${this.cols} to ${newRows}x${newCols}`);
+
         this.rows = newRows;
         this.cols = newCols;
         this.resetGrid();
+
+        // Force optimization after resize
+        setTimeout(() => {
+            this.optimizeGridDisplay();
+        }, 100);
     }
 
     /**
@@ -327,7 +417,7 @@ class Grid {
                 this.setEndNode(gridData.endNode.row, gridData.endNode.col);
             }
 
-            GridRenderer.render();
+            this.render();
             return true;
         } catch (error) {
             console.error('Failed to load grid data:', error);

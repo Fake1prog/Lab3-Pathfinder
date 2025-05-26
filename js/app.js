@@ -94,15 +94,30 @@ function initializeControls() {
         clearPathBtn.addEventListener('click', clearPath);
     }
 
-    // Speed slider
+    // Speed slider - FIXED VERSION
     const speedSlider = document.getElementById('speed-slider');
     const speedValue = document.getElementById('speed-value');
     if (speedSlider && speedValue) {
         speedSlider.addEventListener('input', function() {
-            animationSpeed = parseInt(this.value);
+            // Convert slider value (1-100) to actual animation speed
+            // Lower slider value = faster animation (lower ms delay)
+            // Higher slider value = slower animation (higher ms delay)
+            const sliderValue = parseInt(this.value);
+            animationSpeed = 101 - sliderValue; // Invert: 100 becomes 1ms (fast), 1 becomes 100ms (slow)
+
             speedValue.textContent = `${animationSpeed}ms`;
+
+            // Update the pathfinder speed if it exists
+            if (pathfinder) {
+                pathfinder.setSpeed(animationSpeed);
+            }
+
+            console.log(`🎛️ Speed updated: Slider=${sliderValue}, Animation=${animationSpeed}ms`);
         });
-        // Initialize display
+
+        // Initialize display with current value
+        const initialSliderValue = parseInt(speedSlider.value);
+        animationSpeed = 101 - initialSliderValue;
         speedValue.textContent = `${animationSpeed}ms`;
     }
 
@@ -429,7 +444,7 @@ function generatePattern() {
 }
 
 /**
- * Start pathfinding algorithm
+ * Start pathfinding algorithm - FIXED VERSION
  */
 async function startPathfinding() {
     if (isPathfinding) {
@@ -457,8 +472,13 @@ async function startPathfinding() {
     const startTime = performance.now();
 
     try {
-        // Run A* algorithm with animation
+        // Create new pathfinder instance and set current speed
         const pathfinder = new AStar(gameGrid);
+        pathfinder.setSpeed(animationSpeed); // CRITICAL: Set speed before starting
+
+        console.log(`🚀 Starting pathfinding with speed: ${animationSpeed}ms`);
+
+        // Run A* algorithm with animation, passing the current speed
         const result = await pathfinder.findPath(true, animationSpeed);
 
         const endTime = performance.now();

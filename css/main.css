@@ -1,4 +1,4 @@
-/* Main CSS - Naruto Arcade Theme */
+/* Main CSS - Naruto Arcade Theme - ENHANCED LAYOUT */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 :root {
@@ -97,12 +97,15 @@ body::after {
             0 0 50px rgba(255, 107, 53, 0.3),
             0 0 100px rgba(255, 107, 53, 0.1);
     padding: var(--spacing-lg);
-    width: 95vw;
-    max-width: 1400px;
-    height: 90vh;
+    width: 98vw;
+    max-width: 1600px; /* Increased max-width for larger grids */
+    height: 95vh;
+    max-height: 1000px; /* Increased max-height */
     display: flex;
     flex-direction: column;
     position: relative;
+    /* CRITICAL: Ensure container can handle larger content */
+    overflow: hidden;
 }
 
 /* Arcade Screen Effect */

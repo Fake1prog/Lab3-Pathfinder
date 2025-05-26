@@ -18,14 +18,20 @@ class AStar {
     /**
      * Find the shortest path using A* algorithm
      * Returns a promise for async animation
+     * @param {boolean} animate - Whether to show animation
+     * @param {number} overrideSpeed - Optional speed override in milliseconds
      */
-    async findPath(animate = true) {
+    async findPath(animate = true, overrideSpeed = null) {
         if (this.isRunning) return null;
         if (!this.grid.startNode || !this.grid.endNode) return null;
 
         this.isRunning = true;
         this.startTime = performance.now();
         this.reset();
+
+        // Use override speed if provided, otherwise use instance speed
+        const currentSpeed = overrideSpeed !== null ? overrideSpeed : this.animationSpeed;
+        console.log(`🔍 A* Starting with speed: ${currentSpeed}ms, animate: ${animate}`);
 
         // Initialize start node
         const startNode = this.grid.startNode;
@@ -47,7 +53,8 @@ class AStar {
                 this.path = this.reconstructPath(currentNode);
 
                 if (animate) {
-                    await this.animatePath();
+                    console.log(`🎯 Path found! Animating with speed: ${currentSpeed}ms`);
+                    await this.animatePath(currentSpeed);
                 }
 
                 this.isRunning = false;
@@ -72,7 +79,8 @@ class AStar {
 
                 if (animate) {
                     currentNode.updateVisualState();
-                    await this.delay(this.animationSpeed);
+                    // Use the current speed for animation delay
+                    await this.delay(currentSpeed);
                 }
             }
 
@@ -145,14 +153,19 @@ class AStar {
     /**
      * Animate the final path
      * Show Naruto's journey with style!
+     * @param {number} speed - Animation speed in milliseconds
      */
-    async animatePath() {
+    async animatePath(speed = null) {
+        const pathSpeed = speed !== null ? speed : this.animationSpeed;
+        console.log(`🎬 Animating path with ${pathSpeed}ms delay between steps`);
+
         for (let i = 0; i < this.path.length; i++) {
             const node = this.path[i];
             if (!node.isStart && !node.isEnd) {
                 node.isPath = true;
                 node.updateVisualState();
-                await this.delay(this.animationSpeed * 2); // Slower for dramatic effect
+                // Use slower speed for path animation (more dramatic)
+                await this.delay(pathSpeed * 2);
             }
         }
     }
@@ -173,14 +186,25 @@ class AStar {
      * Stop the algorithm
      */
     stop() {
+        console.log('⏹️ A* algorithm stopped');
         this.isRunning = false;
     }
 
     /**
      * Set animation speed
+     * @param {number} speed - Speed in milliseconds
      */
     setSpeed(speed) {
-        this.animationSpeed = speed;
+        const oldSpeed = this.animationSpeed;
+        this.animationSpeed = Math.max(1, Math.min(1000, speed)); // Clamp between 1ms and 1000ms
+        console.log(`⚡ Speed updated: ${oldSpeed}ms → ${this.animationSpeed}ms`);
+    }
+
+    /**
+     * Get current animation speed
+     */
+    getSpeed() {
+        return this.animationSpeed;
     }
 
     /**
@@ -195,6 +219,7 @@ class AStar {
 
     /**
      * Utility: Delay for animation
+     * @param {number} ms - Milliseconds to delay
      */
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -208,7 +233,16 @@ class AStar {
             pathLength: this.path.length,
             nodesExplored: this.nodesExplored,
             openSetSize: this.openSet.length,
-            closedSetSize: this.closedSet.length
+            closedSetSize: this.closedSet.length,
+            currentSpeed: this.animationSpeed,
+            isRunning: this.isRunning
         };
+    }
+
+    /**
+     * Check if algorithm is currently running
+     */
+    isAlgorithmRunning() {
+        return this.isRunning;
     }
 }
