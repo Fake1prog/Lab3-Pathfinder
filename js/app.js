@@ -86,13 +86,16 @@ class NarutoPathfinder {
      * Save current grid configuration
      */
     saveGrid() {
-        const data = Helpers.exportGrid(this.grid);
-        const blob = new Blob([data], { type: 'application/json' });
+        const gridDataObject = this.grid.getGridData(); // Use the new method from Grid.js
+        const dataString = JSON.stringify(gridDataObject, null, 2); // Beautify JSON for readability
+        const blob = new Blob([dataString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `naruto-grid-${new Date().getTime()}.json`;
+        document.body.appendChild(a); // Required for Firefox
         a.click();
+        document.body.removeChild(a); // Clean up
         URL.revokeObjectURL(url);
 
         Controls.showMessage('GRID SAVED!', 'success');
@@ -114,17 +117,24 @@ class NarutoPathfinder {
 
         const reader = new FileReader();
         reader.onload = (e) => {
-            const success = Helpers.importGrid(this.grid, e.target.result);
-            if (success) {
-                GridRenderer.render();
-                Controls.showMessage('GRID LOADED!', 'success');
-            } else {
-                Controls.showMessage('LOAD FAILED!', 'error');
+            try {
+                const gridDataObject = JSON.parse(e.target.result);
+                const success = this.grid.loadGridData(gridDataObject); // Use the new method from Grid.js
+
+                if (success) {
+                    // GridRenderer.render(); // loadGridData should handle necessary rendering or call GridRenderer.render()
+                    Controls.showMessage('GRID LOADED!', 'success');
+                } else {
+                    Controls.showMessage('LOAD FAILED! Could not apply grid data.', 'error');
+                }
+            } catch (error) {
+                console.error("Error processing loaded file:", error);
+                Controls.showMessage('LOAD FAILED! Invalid file format.', 'error');
             }
         };
         reader.readAsText(file);
 
-        // Reset file input
+        // Reset file input to allow loading the same file again if needed
         event.target.value = '';
     }
 

@@ -11,6 +11,7 @@ class Grid {
         this.endNode = null;
         this.mouseIsPressed = false;
         this.currentMode = 'wall'; // 'wall', 'start', 'end', 'weight'
+        this.nextWallType = 1; // NEW: To alternate wall types
 
         this.initializeGrid();
         this.setDefaultStartEnd();
@@ -93,11 +94,19 @@ class Grid {
     resetPathfinding() {
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
-                this.nodes[row][col].reset();
+                // Only reset pathfinding properties, not wall status or type
+                this.nodes[row][col].isVisited = false;
+                this.nodes[row][col].isPath = false;
+                this.nodes[row][col].g = Infinity;
+                this.nodes[row][col].h = 0;
+                this.nodes[row][col].f = Infinity;
+                this.nodes[row][col].parent = null;
+                if (this.nodes[row][col].element) { // If element exists
+                    this.nodes[row][col].updateVisualState();
+                }
             }
         }
     }
-
     /**
      * Clear all walls from the grid
      * Remove all obstacles from the training ground
@@ -108,6 +117,7 @@ class Grid {
                 const node = this.nodes[row][col];
                 if (node.isWall) {
                     node.isWall = false;
+                    node.wallType = null; // Reset wallType
                     node.updateVisualState();
                 }
             }
@@ -119,10 +129,12 @@ class Grid {
      * Complete training ground reset
      */
     resetGrid() {
-        this.initializeGrid();
+        this.initializeGrid(); // This will create new Node instances, so wallType is null initially
         this.setDefaultStartEnd();
+        this.nextWallType = 1; // Reset wall type alternator
         this.render();
     }
+
 
     /**
      * Handle mouse interactions with the grid
@@ -133,14 +145,22 @@ class Grid {
 
         this.mouseIsPressed = true;
 
-        // Determine action based on what was clicked
         if (node.isStart) {
             this.currentMode = 'start';
         } else if (node.isEnd) {
             this.currentMode = 'end';
         } else {
             this.currentMode = 'wall';
-            node.toggleWall();
+            // Toggle wall state first
+            node.toggleWall(); // This flips node.isWall
+
+            if (node.isWall) { // If it just became a wall
+                node.wallType = this.nextWallType;
+                this.nextWallType = this.nextWallType === 1 ? 2 : 1; // Alternate for the next one
+            } else { // If it stopped being a wall
+                node.wallType = null;
+            }
+            node.updateVisualState(); // Update visuals
         }
     }
 
@@ -162,9 +182,15 @@ class Grid {
                 }
                 break;
             case 'wall':
+                // Only add walls on drag if the cell is not already a start/end/wall
                 if (!node.isStart && !node.isEnd && !node.isWall) {
-                    node.toggleWall();
+                    node.isWall = true; // Set it as a wall
+                    node.wallType = this.nextWallType;
+                    node.updateVisualState();
+                    this.nextWallType = this.nextWallType === 1 ? 2 : 1; // Alternate for the next one
                 }
+                // If you want dragging to also REMOVE walls, you'd need different logic here
+                // e.g., if (node.isWall) { node.isWall = false; node.wallType = null; node.updateVisualState(); }
                 break;
         }
     }
@@ -216,66 +242,70 @@ class Grid {
     }
 
     /**
-     * Save grid state to localStorage
-     * Save the training ground configuration
+     * Gets the current grid state as a serializable object.
      */
-    saveToStorage(name = 'default') {
+    getGridData() {
         const gridData = {
             rows: this.rows,
             cols: this.cols,
             walls: [],
             startNode: null,
-            endNode: null
+            endNode: null,
+            nextWallType: this.nextWallType // Save the current alternator state
         };
 
-        // Save wall positions
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
                 const node = this.nodes[row][col];
                 if (node.isWall) {
-                    gridData.walls.push({ row, col });
+                    gridData.walls.push({ row: node.row, col: node.col, type: node.wallType });
                 }
                 if (node.isStart) {
-                    gridData.startNode = { row, col };
+                    gridData.startNode = { row: node.row, col: node.col };
                 }
                 if (node.isEnd) {
-                    gridData.endNode = { row, col };
+                    gridData.endNode = { row: node.row, col: node.col };
                 }
             }
         }
-
-        localStorage.setItem(`naruto-grid-${name}`, JSON.stringify(gridData));
+        return gridData;
     }
 
     /**
-     * Load grid state from localStorage
-     * Load a saved training ground configuration
+     * Loads the grid state from a data object.
+     * @param {object} gridData The parsed data object to load.
+     * @returns {boolean} True if loading was successful, false otherwise.
      */
-    loadFromStorage(name = 'default') {
-        const savedData = localStorage.getItem(`naruto-grid-${name}`);
-        if (!savedData) return false;
+    loadGridData(gridData) {
+        if (!gridData) return false;
 
         try {
-            const gridData = JSON.parse(savedData);
-
-            // Resize grid if necessary
+            // Resize grid if necessary, or clear for current size
             if (gridData.rows !== this.rows || gridData.cols !== this.cols) {
-                this.resize(gridData.rows, gridData.cols);
+                this.resize(gridData.rows, gridData.cols); // resize should ideally call resetGrid elements
+            } else {
+                // Clear existing elements properly if not resizing
+                this.clearWalls();
+                if (this.startNode) { this.startNode.isStart = false; this.startNode.updateVisualState(); this.startNode = null; }
+                if (this.endNode) { this.endNode.isEnd = false; this.endNode.updateVisualState(); this.endNode = null; }
+                this.setDefaultStartEnd(); // Reset to defaults before applying loaded specifics
             }
 
-            // Clear current grid
-            this.clearWalls();
+            this.nextWallType = gridData.nextWallType || 1; // Restore alternator state
 
-            // Restore walls
-            gridData.walls.forEach(({ row, col }) => {
+            // Restore walls with their types
+            gridData.walls.forEach(({ row, col, type }) => {
                 const node = this.getNode(row, col);
-                if (node) {
+                // Ensure wall isn't placed on designated start/end if they are loaded later
+                if (node && !(gridData.startNode && gridData.startNode.row === row && gridData.startNode.col === col) &&
+                    !(gridData.endNode && gridData.endNode.row === row && gridData.endNode.col === col) ) {
                     node.isWall = true;
+                    node.wallType = type || 1; // Default to type 1 if 'type' is undefined
                     node.updateVisualState();
                 }
             });
 
-            // Restore start and end nodes
+            // Restore start and end nodes (critical to do this after walls potentially, or ensure walls don't override)
             if (gridData.startNode) {
                 this.setStartNode(gridData.startNode.row, gridData.startNode.col);
             }
@@ -283,9 +313,43 @@ class Grid {
                 this.setEndNode(gridData.endNode.row, gridData.endNode.col);
             }
 
+            // this.render(); // The setStartNode, setEndNode, and updateVisualState for walls should handle rendering.
+            // If resize was called, it includes a render. If not, ensure all states are visually up to date.
+            // A final full render might be safest if granular updates are complex.
+            GridRenderer.render(); // Or if your Grid.render() is sufficient and called by resize/setters.
+
             return true;
         } catch (error) {
-            console.error('Failed to load grid:', error);
+            console.error('Failed to load grid data:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Save grid state to localStorage
+     */
+    saveToLocalStorage(name = 'default') {
+        const dataToSave = this.getGridData();
+        localStorage.setItem(`naruto-grid-${name}`, JSON.stringify(dataToSave));
+        console.log(`Grid saved to localStorage with name: naruto-grid-${name}`);
+    }
+
+    /**
+     * Load grid state from localStorage
+     */
+    loadFromLocalStorage(name = 'default') {
+        const savedDataString = localStorage.getItem(`naruto-grid-${name}`);
+        if (!savedDataString) {
+            console.log(`No data found in localStorage for naruto-grid-${name}`);
+            return false;
+        }
+        try {
+            const gridData = JSON.parse(savedDataString);
+            const success = this.loadGridData(gridData);
+            if(success) console.log(`Grid loaded from localStorage: naruto-grid-${name}`);
+            return success;
+        } catch (error) {
+            console.error('Failed to parse or load grid from localStorage:', error);
             return false;
         }
     }
