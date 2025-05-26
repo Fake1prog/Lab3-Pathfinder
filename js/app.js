@@ -732,7 +732,7 @@ function showLoadingScreen() {
                 text-shadow: 0 0 20px #ff6b35;
                 animation: logoGlow 2s ease-in-out infinite alternate;
             ">
-                🍥 NARUTO PATHFINDER 🍥
+                🍥 NARUTO'S PATHFINDER 🍥
             </div>
             
             <!-- Spinning Shuriken -->
